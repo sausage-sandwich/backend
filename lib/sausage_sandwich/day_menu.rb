@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SausageSandwich
-  class DailyDiet
+  class DayMenu
     attr_reader :calories, :proteins, :fats, :carbohydrates
 
     def initialize(calories:, proteins:, fats:, carbohydrates:)
@@ -21,17 +21,19 @@ module SausageSandwich
     end
 
     def satisfy_max_calories_limit?
-      calories.max >= nutrition_calories(proteins.min, fats.min, carbohydrates.min)
+      calories.max >= NutritionFacts.new(
+        proteins: proteins.min,
+        fats: fats.min,
+        carbohydrates: carbohydrates.min
+      ).calories
     end
 
     def satisfy_min_calories_limit?
-      calories.min <= nutrition_calories(proteins.max, fats.max, carbohydrates.max)
-    end
-
-    def nutrition_calories(proteins_weight, fats_weight, carbs_weight)
-      proteins_weight * PROTEINS_CALORIES +
-        fats_weight * FATS_CALORIES +
-        carbs_weight * CARBS_CALORIES
+      calories.min <= NutritionFacts.new(
+        proteins: proteins.max,
+        fats: fats.max,
+        carbohydrates: carbohydrates.max
+      ).calories
     end
   end
 end
