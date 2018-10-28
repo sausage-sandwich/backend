@@ -18,5 +18,10 @@ module SausageSandwich
     def calories
       proteins * PROTEINS_CALORIES + fats * FATS_CALORIES + carbohydrates * CARBS_CALORIES
     end
+
+    def to_s
+      "Calories: #{calories.to_f}, proteins: #{proteins.to_f}, fats: #{fats.to_f}, " \
+        "carbohydrates: #{carbohydrates.to_f}"
+    end
   end
 end
