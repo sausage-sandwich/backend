@@ -9,5 +9,13 @@ module SausageSandwich
     attribute :name, Types::Strict::String
     attribute :nutrition_facts, Types.Constructor(NutritionFacts)
     attribute :weight, Types::Strict::Integer.default(100)
+
+    def calories
+      nutrition_facts.calories
+    end
+
+    def to_s
+      "#{name}. #{nutrition_facts}"
+    end
   end
 end

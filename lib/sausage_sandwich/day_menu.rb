@@ -2,38 +2,45 @@
 
 module SausageSandwich
   class DayMenu
-    attr_reader :calories, :proteins, :fats, :carbohydrates
+    class CalculationProcess
+      attr_reader :calories_left, :products
 
-    def initialize(calories:, proteins:, fats:, carbohydrates:)
+      def initialize(calories_left:)
+        @calories_left = calories_left
+        @products = []
+      end
+
+      def out_of_calories?
+        calories_left <= 0
+      end
+
+      def product_fit?(product)
+        product.calories <= calories_left
+      end
+
+      def add_product(product)
+        products << product
+        @calories_left -= product.calories
+
+        self
+      end
+    end
+
+    attr_reader :calories, :calculation_process
+
+    def initialize(calories:)
       @calories = calories
-      @proteins = proteins
-      @fats = fats
-      @carbohydrates = carbohydrates
-      raise ArgumentError unless valid?
+      @calculation_process = CalculationProcess.new(calories_left: calories)
     end
 
-    def calculate(*); end
+    def calculate(products)
+      result = products.each_with_object(calculation_process) do |product, process|
+        break if process.out_of_calories?
 
-    private
+        process.add_product(product) if process.product_fit?(product)
+      end
 
-    def valid?
-      satisfy_max_calories_limit? && satisfy_min_calories_limit?
-    end
-
-    def satisfy_max_calories_limit?
-      calories.max >= NutritionFacts.new(
-        proteins: proteins.min,
-        fats: fats.min,
-        carbohydrates: carbohydrates.min
-      ).calories
-    end
-
-    def satisfy_min_calories_limit?
-      calories.min <= NutritionFacts.new(
-        proteins: proteins.max,
-        fats: fats.max,
-        carbohydrates: carbohydrates.max
-      ).calories
+      result.products
     end
   end
 end
